@@ -1171,12 +1171,128 @@ class Builder extends BaseBuilder
             ],
         ];
     }
-
-    /**
-     * @param  array  $where
+/**
+     * @param array $where
      * @return array
      */
-    protected function compileWhereDate(array $where): array
+    protected function compileWhereDate(array $where)
+    {
+        extract($where);
+
+        $startOfDay = new UTCDateTime(Carbon::parse($value)->startOfDay());
+        $endOfDay = new UTCDateTime(Carbon::parse($value)->endOfDay());
+
+        $operator = $this->conversion[$operator];
+
+        return match($operator) {
+            '=' => [
+                $column => [
+                    '$gte' => $startOfDay,
+                    '$lte' => $endOfDay,
+                ],
+            ],
+            '$ne' => [
+                $column => [
+                    '$gt' => $endOfDay,
+                    '$lt' => $startOfDay,
+                ],
+            ],
+            '$lt' => [
+                $column => [
+                    '$lt' => $startOfDay,
+                ],
+            ],
+            '$gt' => [
+                $column => [
+                    '$gt' => $endOfDay,
+                ],
+            ],
+            '$lte' => [
+                $column => [
+                    '$lte' => $endOfDay,
+                ],
+            ],
+            '$gte' => [
+                $column => [
+                    '$gte' => $startOfDay,
+                ],
+            ],
+        };
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    protected function compileWhereMonth(array $where)
+    {
+        extract($where);
+
+        $operator = $operator === '=' ? '$eq' : $this->conversion[$operator];
+        $value = str_starts_with($value, '0') ? intval(str_replace('0', '', $value)) : $value;
+
+        return [
+            '$expr' => [
+                $operator => [
+                    [
+                        '$month' => '$'.$column
+                    ],
+                    $value,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    protected function compileWhereDay(array $where)
+    {
+        extract($where);
+
+        $operator = $operator === '=' ? '$eq' : $this->conversion[$operator];
+        $value = str_starts_with($value, '0') ? intval(str_replace('0', '', $value)) : $value;
+
+        return [
+            '$expr' => [
+                $operator => [
+                    [
+                        '$dayOfMonth' => '$'.$column
+                    ],
+                    $value,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    protected function compileWhereYear(array $where)
+    {
+        extract($where);
+
+        $operator = $operator === '=' ? '$eq' : $this->conversion[$operator];
+
+        return [
+            '$expr' => [
+                $operator => [
+                    [
+                        '$year' => '$'.$column
+                    ],
+                    $value
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    protected function compileWhereTime(array $where)
     {
         extract($where);
 
@@ -1185,63 +1301,6 @@ class Builder extends BaseBuilder
 
         return $this->compileWhereBasic($where);
     }
-
-    /**
-     * @param  array  $where
-     * @return array
-     */
-    protected function compileWhereMonth(array $where): array
-    {
-        extract($where);
-
-        $where['operator'] = $operator;
-        $where['value'] = $value;
-
-        return $this->compileWhereBasic($where);
-    }
-
-    /**
-     * @param  array  $where
-     * @return array
-     */
-    protected function compileWhereDay(array $where): array
-    {
-        extract($where);
-
-        $where['operator'] = $operator;
-        $where['value'] = $value;
-
-        return $this->compileWhereBasic($where);
-    }
-
-    /**
-     * @param  array  $where
-     * @return array
-     */
-    protected function compileWhereYear(array $where): array
-    {
-        extract($where);
-
-        $where['operator'] = $operator;
-        $where['value'] = $value;
-
-        return $this->compileWhereBasic($where);
-    }
-
-    /**
-     * @param  array  $where
-     * @return array
-     */
-    protected function compileWhereTime(array $where): array
-    {
-        extract($where);
-
-        $where['operator'] = $operator;
-        $where['value'] = $value;
-
-        return $this->compileWhereBasic($where);
-    }
-
     /**
      * @param  array  $where
      * @return mixed
