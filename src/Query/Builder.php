@@ -1176,7 +1176,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereDate(array $where)
+    /*protected function compileWhereDate(array $where)
     {
         extract($where);
 
@@ -1219,6 +1219,19 @@ class Builder extends BaseBuilder
                 ],
             ],
         };
+    }*/
+    /**
+     * @param  array  $where
+     * @return array
+     */
+    protected function compileWhereDate(array $where): array
+    {
+        extract($where);
+
+        $where['operator'] = $operator;
+        $where['value'] = $value;
+
+        return $this->compileWhereBasic($where);
     }
 
     /**
