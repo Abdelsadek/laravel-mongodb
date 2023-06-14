@@ -1309,7 +1309,19 @@ class Builder extends BaseBuilder
     {
         return $where['sql'];
     }
-
+     public function compileWhereColumn(array $where): mixed
+    {
+        extract($where);
+        $operator = $operator === '=' ? '$eq' : $this->conversion[$operator];
+        return [
+            '$expr' => [
+                $operator => [
+                    '$'.$where['first'],
+                    '$'.$where['second']
+                ],
+            ],
+        ];
+    }
     /**
      * Set custom options for the query.
      *
