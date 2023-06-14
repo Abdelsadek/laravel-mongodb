@@ -1260,7 +1260,7 @@ class Builder extends BaseBuilder
                     [
                         '$dayOfMonth' => '$'.$column
                     ],
-                    $value,
+                    (int)$value,
                 ],
             ],
         ];
