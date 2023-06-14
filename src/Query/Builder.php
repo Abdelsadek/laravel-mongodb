@@ -16,6 +16,7 @@ use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
 use RuntimeException;
+use Carbon\Carbon;
 
 /**
  * Class Builder.
